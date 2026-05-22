@@ -38,35 +38,43 @@ async function fetchRSSFeeds() {
   return allArticles;
 }
 
-async function translateWithAI(article) {
-  try {
-    const response = await axios.post(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
-        model: 'openai/gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: 'Ты спортивный журналист. Перепиши футбольную новость на русском языке. Сохрани факты, но сделай текст живым и интересным. Ответ должен быть 2-3 абзаца.'
+async function translateWithAI(article, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await axios.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model: 'gryphe/mythomax-l2-13b:free',
+          messages: [
+            {
+              role: 'system',
+              content: 'Ты спортивный журналист. Перепиши футбольную новость на русском языке. Сохрани факты, но сделай текст живым и интересным. Ответ должен быть 2-3 абзаца.'
+            },
+            {
+              role: 'user',
+              content: `Заголовок: ${article.title}\n\nТекст: ${article.content}`
+            }
+          ]
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://football-news-auto.vercel.app',
+            'X-Title': 'Football News Auto'
           },
-          {
-            role: 'user',
-            content: `Заголовок: ${article.title}\n\nТекст: ${article.content}`
-          }
-        ]
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json'
+          timeout: 30000
         }
+      );
+      
+      return response.data.choices[0].message.content;
+    } catch (error) {
+      console.error(`Попытка ${i + 1}/${retries} не удалась:`, error.message);
+      if (i === retries - 1) {
+        return `${article.title}\n\n${article.content}`;
       }
-    );
-    
-    return response.data.choices[0].message.content;
-  } catch (error) {
-    console.error('Ошибка AI перевода:', error.message);
-    return `${article.title}\n\n${article.content}`;
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
   }
 }
 
@@ -77,19 +85,18 @@ async function main() {
   console.log(`Собрано ${articles.length} новостей`);
   
   console.log('Обработка через AI...');
-  const processedNews = [];
   
-  for (const article of articles) {
-    const translatedContent = await translateWithAI(article);
-    processedNews.push({
-      ...article,
-      translatedContent,
-      processedAt: new Date().toISOString()
-    });
-    
-    // Задержка чтобы не спамить API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-  }
+  // Параллельная обработка для скорости
+  const processedNews = await Promise.all(
+    articles.map(async (article) => {
+      const translatedContent = await translateWithAI(article);
+      return {
+        ...article,
+        translatedContent,
+        processedAt: new Date().toISOString()
+      };
+    })
+  );
   
   await fs.writeFile('news-data.json', JSON.stringify(processedNews, null, 2));
   console.log('Новости сохранены в news-data.json');

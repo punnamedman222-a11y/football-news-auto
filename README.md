@@ -1,38 +1,37 @@
-# Футбольные Новости - Автоматический Сайт
+# ⚽ Футбольные Новости - Автоматический Сайт
 
-Автоматический сайт с футбольными новостями. Парсит RSS-ленты, переводит через AI, публикует на Vercel.
+Современный автоматический сайт с футбольными новостями. Парсит RSS-ленты, переводит через AI, публикует на Vercel.
 
-## Возможности
+🔗 **Live Demo:** https://football-news-auto.vercel.app
 
-- 📰 Парсинг новостей из BBC Sport, Sky Sports, ESPN
-- 🤖 Автоматический перевод через OpenRouter (gpt-3.5-turbo)
-- 🎨 Современный дизайн
-- ⚡ Статический сайт на Vercel
-- 🔄 Автообновление раз в день через GitHub Actions
+## ✨ Возможности
 
-## Установка
+- 📰 **Автоматический парсинг** из BBC Sport, Sky Sports, ESPN
+- 🤖 **AI перевод** через OpenRouter (бесплатная модель)
+- 🎨 **Современный дизайн** с тёмной темой
+- 🔍 **Поиск** по заголовкам и содержимому
+- 🏷️ **Фильтры** по источникам новостей
+- ⚡ **Быстрая загрузка** - статический сайт
+- 📱 **Адаптивный** дизайн для всех устройств
+- 🔄 **Автообновление** раз в день через GitHub Actions
+- ♿ **Доступность** - семантический HTML, ARIA-атрибуты
 
-1. Клонируй репозиторий
-2. Установи зависимости:
+## 🚀 Быстрый старт
+
+### Локальная разработка
+
 ```bash
+# Клонировать репозиторий
+git clone https://github.com/punnamedman222-a11y/football-news-auto.git
+cd football-news-auto
+
+# Установить зависимости
 npm install
-```
 
-3. Создай `.env` файл:
-```bash
+# Создать .env файл
 cp .env.example .env
-```
+# Добавить свой OPENROUTER_API_KEY
 
-4. Добавь свой API ключ OpenRouter в `.env`:
-```
-OPENROUTER_API_KEY=your_key_here
-```
-
-## Использование
-
-### Локально
-
-```bash
 # Собрать новости
 npm run fetch
 
@@ -47,45 +46,112 @@ npm run dev
 
 ### Деплой на Vercel
 
-1. Установи Vercel CLI:
-```bash
-npm install -g vercel
-```
+1. Fork этот репозиторий
+2. Импортируй в Vercel: https://vercel.com/new
+3. Добавь переменную окружения `OPENROUTER_API_KEY`
+4. Задеплой
 
-2. Залогинься:
-```bash
-vercel login
-```
+### Настройка автообновления
 
-3. Задеплой:
-```bash
-vercel --prod
-```
+Добавь секреты в GitHub (Settings → Secrets and variables → Actions):
 
-4. Добавь секреты в GitHub:
-   - `OPENROUTER_API_KEY` - твой ключ OpenRouter
-   - `VERCEL_TOKEN` - токен Vercel (получи в настройках)
-   - `VERCEL_ORG_ID` - ID организации Vercel
-   - `VERCEL_PROJECT_ID` - ID проекта Vercel
+- `OPENROUTER_API_KEY` - твой ключ OpenRouter
+- `VERCEL_TOKEN` - токен Vercel (https://vercel.com/account/tokens)
+- `VERCEL_ORG_ID` - ID организации (из `.vercel/project.json`)
+- `VERCEL_PROJECT_ID` - ID проекта (из `.vercel/project.json`)
 
-## Автообновление
-
-GitHub Actions автоматически обновляет новости каждый день в 8:00 UTC (11:00 МСК).
-
-Можно запустить вручную: Actions → Update News Daily → Run workflow
-
-## Структура
+## 📁 Структура проекта
 
 ```
 football-news-auto/
 ├── scripts/
-│   ├── fetch-news.js    # Парсинг RSS и AI обработка
+│   ├── fetch-news.js    # Парсинг RSS + AI обработка
 │   └── build-site.js    # Генерация HTML
 ├── public/              # Готовый сайт
 ├── .github/workflows/   # GitHub Actions
-└── package.json
+│   └── update-news.yml  # Автообновление
+├── package.json
+├── vercel.json          # Конфигурация Vercel
+└── README.md
 ```
 
-## Лицензия
+## 🛠️ Технологии
+
+- **Node.js** - среда выполнения
+- **RSS Parser** - парсинг новостных лент
+- **OpenRouter API** - AI перевод (бесплатная модель)
+- **Vercel** - хостинг и деплой
+- **GitHub Actions** - автоматизация
+
+## ⚙️ Конфигурация
+
+### Изменить время обновления
+
+Отредактируй `.github/workflows/update-news.yml`:
+
+```yaml
+schedule:
+  - cron: '0 8 * * *'  # 8:00 UTC = 11:00 МСК
+```
+
+### Добавить источники новостей
+
+Отредактируй `scripts/fetch-news.js`:
+
+```javascript
+const RSS_FEEDS = [
+  'https://www.skysports.com/rss/12040',
+  'https://www.espn.com/espn/rss/soccer/news',
+  'http://feeds.bbci.co.uk/sport/football/rss.xml',
+  // Добавь свои RSS ленты
+];
+```
+
+### Изменить AI модель
+
+В `scripts/fetch-news.js` строка 46:
+
+```javascript
+model: 'gryphe/mythomax-l2-13b:free',  // Бесплатная модель
+```
+
+Другие бесплатные модели: https://openrouter.ai/docs#models
+
+## 🎨 Кастомизация дизайна
+
+Отредактируй `scripts/build-site.js` - весь CSS встроен в шаблон.
+
+**Основные цвета:**
+- Фон: `#0a0e27`
+- Карточки: `#1a1f3a`
+- Акцент: `#667eea`
+
+## 📊 Производительность
+
+- ⚡ **Параллельная обработка** - все новости переводятся одновременно
+- 🔄 **Retry логика** - 3 попытки при ошибках API
+- 📦 **Статический HTML** - мгновенная загрузка
+- 🎯 **Оптимизация** - минимальные зависимости
+
+## 🔒 Безопасность
+
+- ✅ API ключи в переменных окружения
+- ✅ `.env` в `.gitignore`
+- ✅ `rel="noopener noreferrer"` на внешних ссылках
+- ✅ Timeout для API запросов
+
+## 📝 Лицензия
 
 MIT
+
+## 🤝 Вклад
+
+Pull requests приветствуются! Для больших изменений сначала открой issue.
+
+## 📧 Контакты
+
+Вопросы? Открой issue на GitHub.
+
+---
+
+Сделано с ⚽ и ❤️
