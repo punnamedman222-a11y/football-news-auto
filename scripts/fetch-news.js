@@ -44,7 +44,7 @@ async function translateWithAI(article, retries = 3) {
       const response = await axios.post(
         'https://openrouter.ai/api/v1/chat/completions',
         {
-          model: 'gryphe/mythomax-l2-13b:free',
+          model: 'openai/gpt-oss-120b:free',
           messages: [
             {
               role: 'system',
