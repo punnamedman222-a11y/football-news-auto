@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run fetch && npm run build",
+  "outputDirectory": "public",
+  "installCommand": "npm install"
+}
